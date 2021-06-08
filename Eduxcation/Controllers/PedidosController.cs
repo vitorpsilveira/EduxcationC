@@ -6,6 +6,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Eduxcation.Models;
+using Eduxcation.Models.Request;
+using Microsoft.Data.SqlClient;
+using Eduxcation.Models.Response;
 
 namespace Eduxcation.Controllers
 {
@@ -18,6 +21,7 @@ namespace Eduxcation.Controllers
         public PedidosController(EduxcationContext context)
         {
             _context = context;
+
         }
 
         // GET: api/Pedidoes
@@ -77,19 +81,28 @@ namespace Eduxcation.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
-        public async Task<ActionResult<Pedido>> PostPedido(Pedido pedido/*, List<PedidoItem> pedidoItem*/)
+		public async Task<ActionResult<PedidoResponse>> PostPedido(PedidoRequest pedido)
         {
-            _context.Pedidos.Add(pedido);
+            int ultimoPedido;
 
-            //foreach (var item in pedidoItem)
-            //{
-            //    item.PedidoId = pedido.Id;
+            _context.Database.ExecuteSqlCommand("Insert into Pedido values({0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}); ",
+                pedido.QtdProdutos, pedido.TotalProdutos, pedido.Frete, pedido.TotalPedido,
+                pedido.ClienteId, pedido.DataPedido, pedido.CondicaoPagto, pedido.StatusPedido, pedido.Observacao);
 
-            //    _context.PedidoItems.Add(item);
-            //}
+            ultimoPedido = _context.Pedidos.ToList().LastOrDefault().Id;
+
+
+            foreach (var item in pedido.PedidoItem)
+            {
+                _context.Database.ExecuteSqlCommand("Insert into Pedido_Item values({0}, {1}, {2}, {3}, {4});", ultimoPedido, 
+                    item.ProdutoId, item.QtdProduto, item.PrecoUnitario, item.Total
+                    );
+            }
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetPedido", new { id = pedido.Id }, pedido);
+
+
+            return CreatedAtAction("GetPedido", new { id = ultimoPedido }, pedido);
         }
 
         // DELETE: api/Pedidoes/5

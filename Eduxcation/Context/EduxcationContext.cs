@@ -25,8 +25,9 @@ namespace Eduxcation.Models
         public virtual DbSet<Produto> Produtos { get; set; }
         public virtual DbSet<StatusPedido> StatusPedidos { get; set; }
         public virtual DbSet<TipoProduto> TipoProdutos { get; set; }
+		public object Produto { get; internal set; }
 
-        /*protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+		/*protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
             {
@@ -35,7 +36,7 @@ namespace Eduxcation.Models
             }
         }*/
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
+		protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.HasAnnotation("Relational:Collation", "Latin1_General_CI_AS");
 
@@ -331,6 +332,6 @@ namespace Eduxcation.Models
             OnModelCreatingPartial(modelBuilder);
         }
 
-        partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
+		partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
     }
 }

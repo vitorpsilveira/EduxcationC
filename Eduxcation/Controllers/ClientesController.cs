@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Eduxcation.Models;
+using Eduxcation.Models.Request;
 
 namespace Eduxcation.Controllers
 {
@@ -77,12 +78,20 @@ namespace Eduxcation.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
-        public async Task<ActionResult<Cliente>> PostCliente(Cliente cliente)
+        public async Task<ActionResult<ClienteRequest>> PostCliente(ClienteRequest cliente)
         {
-            _context.Clientes.Add(cliente);
+            int ultimoCliente;
+
+            _context.Database.ExecuteSqlCommand("Insert into Cliente values({0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}); ",
+                cliente.NomeCompleto, cliente.DataNascimento, cliente.Cpf, cliente.Telefone,
+                cliente.Email, cliente.Senha, cliente.Endereco, cliente.Numero, cliente.Complemento,
+                cliente.Bairro, cliente.CodCid, cliente.Cep);
+
+            ultimoCliente = _context.Clientes.ToList().LastOrDefault().Id;
+
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetCliente", new { id = cliente.Id }, cliente);
+            return CreatedAtAction("GetCliente", new { id = ultimoCliente }, cliente);
         }
 
         // DELETE: api/Clientes/5

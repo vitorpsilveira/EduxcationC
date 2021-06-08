@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Eduxcation.Models;
+using Eduxcation.Models.Request;
 
 namespace Eduxcation.Controllers
 {
@@ -14,8 +15,9 @@ namespace Eduxcation.Controllers
     public class ProdutosController : ControllerBase
     {
         private readonly EduxcationContext _context;
+		private int ultimoProduto;
 
-        public ProdutosController(EduxcationContext context)
+		public ProdutosController(EduxcationContext context)
         {
             _context = context;
         }
@@ -77,12 +79,19 @@ namespace Eduxcation.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
-        public async Task<ActionResult<Produto>> PostProduto(Produto produto)
+        public async Task<ActionResult<ProdutoRequest>> PostProduto(ProdutoRequest produto)
         {
-            _context.Produtos.Add(produto);
+
+            int ultimoProduto;
+
+            _context.Database.ExecuteSqlCommand("Insert into Produto values({0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}); ",
+                produto.IdTipoProduto, produto.Descricao, produto.PrecoVenda, produto.Autor,
+                produto.Editora, produto.Volume, produto.Ano, produto.SaldoAtual);
+
+            ultimoProduto = _context.Produtos.ToList().LastOrDefault().Id;
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetProduto", new { id = produto.Id }, produto);
+            return CreatedAtAction("GetProduto", new { id = ultimoProduto }, produto);
         }
 
         // DELETE: api/Produtos/5
