@@ -24,7 +24,7 @@ namespace Eduxcation
 		}
 
 		public IConfiguration Configuration { get; }
-
+		public const string CorsAllow = "AllowAny";
 		// This method gets called by the runtime. Use this method to add services to the container.
 		public void ConfigureServices(IServiceCollection services)
 		{
@@ -36,6 +36,16 @@ namespace Eduxcation
 			 services.AddSwaggerGen(options =>
 			{
 				options.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "Projeto Exemplo", Version = "v1" });
+			});
+
+			services.AddCors(options =>
+			{
+				options.AddPolicy("CorsPolicy", builder => builder
+				.AllowAnyOrigin()
+				.AllowAnyMethod()
+				.AllowAnyHeader()
+				//.AllowCredentials()
+				);
 			});
 
 			services.AddControllers();
@@ -65,6 +75,8 @@ namespace Eduxcation
 			{
 				c.SwaggerEndpoint("/swagger/v1/swagger.json", "Projeto Exemplo V1");
 			});
+
+			app.UseCors("CorsPolicy");
 		}
 	}
 }

@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Eduxcation.Models;
 using Eduxcation.Models.Request;
+using Microsoft.AspNetCore.Cors;
 
 namespace Eduxcation.Controllers
 {
@@ -14,8 +14,8 @@ namespace Eduxcation.Controllers
     [ApiController]
     public class ProdutosController : ControllerBase
     {
+
         private readonly EduxcationContext _context;
-		private int ultimoProduto;
 
 		public ProdutosController(EduxcationContext context)
         {
@@ -31,6 +31,7 @@ namespace Eduxcation.Controllers
 
         // GET: api/Produtos/5
         [HttpGet("{id}")]
+        [DisableCors]
         public async Task<ActionResult<Produto>> GetProduto(int id)
         {
             var produto = await _context.Produtos.FindAsync(id);
@@ -79,6 +80,7 @@ namespace Eduxcation.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
+        [DisableCors]
         public async Task<ActionResult<ProdutoRequest>> PostProduto(ProdutoRequest produto)
         {
 
